@@ -1,0 +1,28 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/nginx.Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./sources:/var/www/html
+      - ./docker/server/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+      - mysql
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    restart: always
+    volumes:
+      - ./sources:/var/www/html:delegated
+    ports:
+      - "3000:9000"
+  mysql:
+    image: mysql:8.4
+    env_file:
+      - ./docker/env/mysql.env
+    ports:
+      - "3306:3306"
